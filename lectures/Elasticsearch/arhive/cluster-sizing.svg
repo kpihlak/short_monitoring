@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+    <style>
+        .title { font-family: Arial; font-size: 24px; fill: #000000; }
+        .header { font-family: Arial; font-size: 16px; fill: #ffffff; }
+        .cell-text { font-family: Arial; font-size: 14px; fill: #000000; }
+        .bullet-text { font-family: Arial; font-size: 16px; fill: #000000; }
+        .note-text { font-family: Arial; font-size: 12px; font-style: italic; fill: #666666; }
+    </style>
+    
+    <!-- Title -->
+    <text x="50" y="50" class="title">Sizing of a simple 3 node cluster</text>
+    
+    <!-- Bullet Points -->
+    <text x="50" y="100" class="bullet-text">• Depends on your data that comes in</text>
+    <text x="50" y="130" class="bullet-text">• My recommendations for a small size 3 node cluster with 1,2 TB storage:</text>
+    
+    <!-- Table -->
+    <!-- Headers -->
+    <rect x="50" y="150" width="200" height="40" fill="#1a1a1a"/>
+    <rect x="250" y="150" width="200" height="40" fill="#1a1a1a"/>
+    <rect x="450" y="150" width="200" height="40" fill="#1a1a1a"/>
+    
+    <text x="150" y="175" class="header" text-anchor="middle">Type</text>
+    <text x="350" y="175" class="header" text-anchor="middle">Min requirement*</text>
+    <text x="550" y="175" class="header" text-anchor="middle">Recommendation*</text>
+    
+    <!-- Rows -->
+    <!-- CPU Row -->
+    <rect x="50" y="190" width="200" height="40" fill="#f0f0f0"/>
+    <rect x="250" y="190" width="200" height="40" fill="#f0f0f0"/>
+    <rect x="450" y="190" width="200" height="40" fill="#f0f0f0"/>
+    
+    <text x="70" y="215" class="cell-text">CPU</text>
+    <text x="270" y="215" class="cell-text">2 cores</text>
+    <text x="470" y="215" class="cell-text">4+ cores</text>
+    
+    <!-- Memory Row -->
+    <rect x="50" y="230" width="200" height="40" fill="#ffffff"/>
+    <rect x="250" y="230" width="200" height="40" fill="#ffffff"/>
+    <rect x="450" y="230" width="200" height="40" fill="#ffffff"/>
+    
+    <text x="70" y="255" class="cell-text">Memory</text>
+    <text x="270" y="255" class="cell-text">8gb</text>
+    <text x="470" y="255" class="cell-text">16gb</text>
+    
+    <!-- Disk Row -->
+    <rect x="50" y="270" width="200" height="40" fill="#f0f0f0"/>
+    <rect x="250" y="270" width="200" height="40" fill="#f0f0f0"/>
+    <rect x="450" y="270" width="200" height="40" fill="#f0f0f0"/>
+    
+    <text x="70" y="295" class="cell-text">Disk</text>
+    <text x="270" y="295" class="cell-text">400gb fast HDD</text>
+    <text x="470" y="295" class="cell-text">400gb SSD storage</text>
+    
+    <!-- Note -->
+    <text x="50" y="350" class="note-text">* Note: These are my own experiences and are not official recommendations by elastic</text>
+</svg>

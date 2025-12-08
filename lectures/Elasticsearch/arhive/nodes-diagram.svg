@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+    <!-- Definitions for reusable elements -->
+    <defs>
+        <!-- Node box style -->
+        <rect id="nodeBox" width="140" height="80" rx="5" fill="#1e40af"/>
+        
+        <!-- Label styles -->
+        <style type="text/css">
+            .nodeText { fill: white; font-size: 14px; font-family: Arial; }
+            .labelText { fill: white; font-size: 12px; font-family: Arial; }
+            .timeText { fill: #1e40af; font-size: 14px; font-family: Arial; }
+        </style>
+    </defs>
+
+    <!-- Hot Nodes (1-3) -->
+    <g transform="translate(50,50)">
+        <use href="#nodeBox"/>
+        <text x="70" y="35" class="nodeText" text-anchor="middle">Node1</text>
+        <text x="70" y="55" class="labelText" text-anchor="middle">(fast 1 TB SSD +</text>
+        <text x="70" y="70" class="labelText" text-anchor="middle">CPU + Memory)</text>
+        <rect x="-10" y="-20" width="80" height="25" rx="5" fill="#dc2626" transform="rotate(-45 20 0)"/>
+        <text x="20" y="-5" class="labelText" text-anchor="middle" transform="rotate(-45 20 0)">Hot nodes</text>
+    </g>
+
+    <g transform="translate(220,50)">
+        <use href="#nodeBox"/>
+        <text x="70" y="35" class="nodeText" text-anchor="middle">Node2</text>
+        <text x="70" y="55" class="labelText" text-anchor="middle">(fast 1 TB SSD +</text>
+        <text x="70" y="70" class="labelText" text-anchor="middle">CPU + Memory)</text>
+        <rect x="-10" y="-20" width="80" height="25" rx="5" fill="#dc2626" transform="rotate(-45 20 0)"/>
+        <text x="20" y="-5" class="labelText" text-anchor="middle" transform="rotate(-45 20 0)">Hot nodes</text>
+    </g>
+
+    <g transform="translate(390,50)">
+        <use href="#nodeBox"/>
+        <text x="70" y="35" class="nodeText" text-anchor="middle">Node3</text>
+        <text x="70" y="55" class="labelText" text-anchor="middle">(fast 1 TB SSD +</text>
+        <text x="70" y="70" class="labelText" text-anchor="middle">CPU + Memory)</text>
+        <rect x="-10" y="-20" width="80" height="25" rx="5" fill="#dc2626" transform="rotate(-45 20 0)"/>
+        <text x="20" y="-5" class="labelText" text-anchor="middle" transform="rotate(-45 20 0)">Hot nodes</text>
+    </g>
+
+    <!-- Warm Nodes (4-5) -->
+    <g transform="translate(560,50)">
+        <use href="#nodeBox"/>
+        <text x="70" y="35" class="nodeText" text-anchor="middle">Node4</text>
+        <text x="70" y="55" class="labelText" text-anchor="middle">(2tb 10k rpm</text>
+        <text x="70" y="70" class="labelText" text-anchor="middle">HDD+ slower)</text>
+        <rect x="-10" y="-20" width="90" height="25" rx="5" fill="#eab308" transform="rotate(-45 20 0)"/>
+        <text x="20" y="-5" class="labelText" text-anchor="middle" transform="rotate(-45 20 0)">Warm nodes</text>
+    </g>
+
+    <g transform="translate(730,50)">
+        <use href="#nodeBox"/>
+        <text x="70" y="35" class="nodeText" text-anchor="middle">Node5</text>
+        <text x="70" y="55" class="labelText" text-anchor="middle">(2tb HDD+</text>
+        <text x="70" y="70" class="labelText" text-anchor="middle">slower)</text>
+        <rect x="-10" y="-20" width="90" height="25" rx="5" fill="#eab308" transform="rotate(-45 20 0)"/>
+        <text x="20" y="-5" class="labelText" text-anchor="middle" transform="rotate(-45 20 0)">Warm nodes</text>
+    </g>
+
+    <!-- Cold Nodes (6-7) -->
+    <g transform="translate(50,200)">
+        <use href="#nodeBox"/>
+        <text x="70" y="35" class="nodeText" text-anchor="middle">Node6</text>
+        <text x="70" y="55" class="labelText" text-anchor="middle">(10tb HDD+</text>
+        <text x="70" y="70" class="labelText" text-anchor="middle">slower)</text>
+        <rect x="-10" y="-20" width="80" height="25" rx="5" fill="#22c55e" transform="rotate(-45 20 0)"/>
+        <text x="20" y="-5" class="labelText" text-anchor="middle" transform="rotate(-45 20 0)">Cold nodes</text>
+    </g>
+
+    <g transform="translate(220,200)">
+        <use href="#nodeBox"/>
+        <text x="70" y="35" class="nodeText" text-anchor="middle">Node7</text>
+        <text x="70" y="55" class="labelText" text-anchor="middle">(10tb HDD+</text>
+        <text x="70" y="70" class="labelText" text-anchor="middle">slower)</text>
+        <rect x="-10" y="-20" width="80" height="25" rx="5" fill="#22c55e" transform="rotate(-45 20 0)"/>
+        <text x="20" y="-5" class="labelText" text-anchor="middle" transform="rotate(-45 20 0)">Cold nodes</text>
+    </g>
+
+    <!-- Arrows and Time Labels -->
+    <path d="M 460,90 C 500,90 520,90 560,90" fill="none" stroke="#1e40af" stroke-width="2"/>
+    <text x="510" y="80" class="timeText">2 days</text>
+
+    <path d="M 290,200 C 400,200 600,150 700,130" fill="none" stroke="#1e40af" stroke-width="2"/>
+    <text x="500" y="180" class="timeText">5 days</text>
+</svg>

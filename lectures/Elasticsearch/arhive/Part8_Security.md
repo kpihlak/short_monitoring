@@ -1,0 +1,11 @@
+# Elasticsearch Turvalisus
+
+| **Section** | **Details** |
+|-------------|-------------|
+| **1. Autentimine ja Autoriseerimine** | **Meetodid kasutajate tuvastamiseks:**<br> - Native Realm (sisseehitatud kasutajahaldus)<br> - LDAP/Active Directory integratsioon<br> - Single Sign-On (SSO)<br> - OpenID Connect<br> - SAML autentimine <br> **Rollipõhine juurdepääsukontroll (RBAC):**<br> - Andmeanalüütik: ainult lugemisõigused<br> - Süsteemiadministraator: täielik klastri haldamise õigus<br> - Monitooringu kasutaja: ainult jälgimise õigused |
+| **2. Sertifikaadid ja CA** | **Komponendid:**<br> - Root CA: peamine sertifitseerimiskeskus<br> - Vahe-CA-d: täiendav turvakiht<br> - Node'ide sertifikaadid: iga node'i unikaalne identiteet<br> - Kliendisertifikaadid: välist juurdepääsu vajavad rakendused |
+| **3. Võrgu Turvalisus** | **TLS (Transport Layer Security):**<br> - Node'ide vaheline krüpteering<br> - Klient-node krüpteering<br> - Sertifikaatide valideerimine<br> **IP filtreerimine:**<br> - Juurdepääsu piiramist IP-aadresside põhjal<br> - Võrgu segmenteerimist<br> - Tulemüüri reeglite seadistamine |
+| **4. Andmete Turvalisus** | **Krüpteerimine:**<br> - Node'i tasemel krüpteering<br> - Indeksi tasemel krüpteering<br> - Võtmete turvaline haldamine<br> **Auditi Logimine:**<br> - Kasutajate tegevuste jälgimine<br> - Turvasündmuste logimine<br> - Vastavuse jälgimine regulatsioonidele |
+| **5. Parimad Turvalisuse Tavad** | **Paroolihaldus:**<br> - Tugevad parooli nõuded<br> - Regulaarne paroolide uuendamine<br> - Parooli ajaloo jälgimine<br> **Süsteemi Hooldus:**<br> - Elasticsearch'i uuenduste paigaldamine<br> - Turvaparanduste haldamine<br> - Versiooniühilduvuse tagamine |
+| **6. Levinud Turvaprobleemid** | **Konfiguratsiooni Vead:**<br> - Vaikimisi paroolide kasutamine<br> - Väljalülitatud turvafunktsioonid<br> - Liiga laialdased õigused<br> **Võrgu Haavatavused:**<br> - Avalikult ligipääsetavad klastrid<br> - Turvamata pordid<br> - Puuduv TLS |
+| **7. Turvatestid ja Monitooring** | **Regulaarsed turvatestid:**<br> - Turvaaukude tuvastamine<br> - Vale konfiguratsioonide leidmine<br> - Potentsiaalsete ohtude tuvastamine<br> **Monitooring:**<br> - Ebatavaliste juurdepääsukatsete jälgimine<br> - Ressursikasutuse jälgimine<br> - Turvaintsidentide jälgimine |
