@@ -92,15 +92,30 @@ docker compose ps
 
 Peaksid nägema kolme konteinerit, kõik staatuses "Up". Esimene kord võtab käivitamine natuke aega, sest Docker peab image'id alla laadima.
 
-Nüüd kontrollime, kas kõik töötab. Ava brauseris http://localhost:8080/metrics - peaksid nägema Shoehub'i tooreid mõõdikuid tekstiformaadis. Read nagu `shoehub_sales{ShoeType="Loafers",CountryCode="AU"} 145.0` näitavad, et Shoehub genereerib andmeid.
+## Kiire "kas töötab?" kontroll
 
-Ava http://localhost:9090 - see on Prometheus'e UI. Ja http://localhost:3000 on Grafana, kuhu saad sisse logida kasutajaga admin ja parooliga admin.
+Enne kui hakkad dashboardi ehitama, tee see 2-minutiline test:
+
+1. `docker compose ps` → kõik kolm konteinerit peavad olema "Up"
+2. http://localhost:8080/metrics → näed `shoehub_...` ridu tekstina
+3. http://localhost:9090/targets → shoehub on UP (roheline)
+4. Grafana → Prometheus datasource → URL `http://prometheus:9090` → Save & Test OK
+
+Kui mõni samm ebaõnnestub, vaata labori lõpus olevat "Kui midagi ei tööta" sektsiooni.
 
 ## Osa 2: Tutvumine Prometheus'e päringutega
 
 Enne Grafanasse minekut tutvume Prometheus'e UI-ga. See aitab mõista, kuidas päringud töötavad.
 
-Ava http://localhost:9090 ja mine Graph tab'i. Sisesta päringukasti:
+Ava http://localhost:9090 ja mine Graph tab'i. Kõigepealt vaatame, millised mõõdikud on üldse olemas. Sisesta päringukasti lihtsalt:
+
+```
+shoehub_
+```
+
+Autocomplete näitab sulle kõiki saadaolevaid mõõdikuid. Peaksid nägema vähemalt `shoehub_sales` ja võimalik, et ka `shoehub_payments`. Pane tähele täpsed nimed - kui payments mõõdikut pole või on see teise nimega, pead hiljem päringuid kohandama.
+
+Sisesta nüüd:
 
 ```promql
 shoehub_sales
@@ -172,33 +187,23 @@ sum(shoehub_sales)
 
 Paremal pool muuda visualisatsioonitüüp Stat'iks (vaikimisi on Time Series). Anna pealkiri "Kogumüük". See näitab nüüd üht suurt numbrit - kogu müükide summat.
 
-Kolmas paneel on sektordiagramm, mis näitab makseid riikide kaupa. Lisa uus visualization ja muuda tüüp Pie Chart'iks.
+Kolmas paneel on sektordiagramm, mis näitab müüke riikide kaupa. Lisa uus visualization ja muuda tüüp Pie Chart'iks.
 
-Siin vajame mitut päringut. Esimese päringu (A) jaoks:
-
-```promql
-sum(shoehub_payments{CountryCode="AU"})
-```
-
-Lisa teine päring (B) klikkides + Query:
+Selle asemel, et teha kolm eraldi päringut iga riigi jaoks, kasutame üht päringut, mis grupeerib automaatselt:
 
 ```promql
-sum(shoehub_payments{CountryCode="US"})
+sum by (CountryCode) (shoehub_sales)
 ```
 
-Ja kolmas (C):
+See on elegantsem lahendus - kui lisandub uusi riike, ilmuvad need automaatselt graafikule. Legend sektsioonis pane `{{CountryCode}}`, et sektorid saaksid riigikoodide nimed.
 
-```promql
-sum(shoehub_payments{CountryCode="IN"})
-```
-
-Iga päringu juures Options sektsioonis saad määrata Legend'i - pane vastavalt "Australia", "USA", "India". Anna paneelile pealkiri "Maksed per riik".
+Anna paneelile pealkiri "Müük per riik".
 
 Nüüd salvesta dashboard. Kliki ülaosas disketiikoonil või vajuta Ctrl+S. Anna dashboardile nimi "Shoe Sales Dashboard".
 
 ## Osa 5: Dünaamilised valikud variable'itega
 
-Praegu on riigid dashboardis "hardcoded". Aga mis siis, kui tahad, et kasutaja saaks ise valida, millist riiki vaadata? Selleks kasutame variable'eid.
+Praegu on riigid dashboardis automaatsed. Aga mis siis, kui tahad, et kasutaja saaks ise valida, millist riiki vaadata? Selleks kasutame variable'eid.
 
 Mine dashboardi seadetesse - kliki ülaosas hammasrattaikoonil (Dashboard settings). Vali vasakult Variables ja kliki New variable.
 
@@ -207,10 +212,10 @@ Täida väljad järgmiselt. Name väljale kirjuta `country` - see on nimi, mida 
 Query väljale kirjuta:
 
 ```
-label_values(shoehub_payments, CountryCode)
+label_values(shoehub_sales, CountryCode)
 ```
 
-See päring leiab kõik unikaalsed CountryCode väärtused shoehub_payments mõõdikust.
+See päring leiab kõik unikaalsed CountryCode väärtused shoehub_sales mõõdikust.
 
 Lülita sisse Multi-value ja Include All option. See võimaldab kasutajal valida mitu riiki korraga või kõik korraga.
 
@@ -221,38 +226,40 @@ Nüüd näed dashboardi ülaosas dropdown'i "Riik". Aga meie paneelid ei kasuta 
 Lisa uus visualization ja sisesta päring:
 
 ```promql
-sum(rate(shoehub_payments{CountryCode="$country"}[1m]))
+sum(rate(shoehub_sales{CountryCode=~"$country"}[1m]))
 ```
 
-Pane tähele `$country` - see asendatakse kasutaja valikuga. Anna paneelile pealkiri "Maksed - $country", siis näitab pealkiri ka valitud riiki.
+Pööra tähelepanu, et kasutame `=~` mitte `=`. See on regex-match, mis on vajalik kui valid mitu riiki korraga (Multi-value). Tavaline `=` ei tööta mitme väärtusega - Grafana annab siis väärtuse kujul `AU|US|IN` ja Prometheus ei mõista seda ilma regexita.
 
-Nüüd kui valid dropdown'ist erinevaid riike, uueneb paneel automaatselt.
+Anna paneelile pealkiri "Müük - $country", siis näitab pealkiri ka valitud riiki.
+
+Nüüd kui valid dropdown'ist erinevaid riike või "All", uueneb paneel automaatselt.
 
 ## Osa 6: Visuaalne tagasiside threshold'idega
 
-Gauge paneel on hea viis näidata ühte väärtust nii, et värvid annavad kohe tagasisidet. Loome paneeli, mis näitab PayPal maksete osakaalu USAs.
+Gauge paneel on hea viis näidata ühte väärtust nii, et värvid annavad kohe tagasisidet. Loome paneeli, mis näitab ühe jalanõutüübi osakaalu kogumüügist.
 
 Lisa uus visualization ja muuda tüüp Gauge'iks. Sisesta päring:
 
 ```promql
-sum(shoehub_payments{CountryCode="US", PaymentMethod="Paypal"}) 
+sum(shoehub_sales{ShoeType="Loafers"}) 
 / 
-sum(shoehub_payments{CountryCode="US"}) 
+sum(shoehub_sales) 
 * 100
 ```
 
-See arvutab, mitu protsenti USA maksetest on PayPal.
+See arvutab, mitu protsenti kogumüügist moodustavad Loafers'id.
 
 Paremal pool seadetes mine Standard options sektsiooni ja vali Unit → Percent (0-100).
 
 Seejärel mine Thresholds sektsiooni. Vaikimisi on üks threshold. Seadista nii:
 - Base väärtus jääb 0, värv roheline
-- Lisa uus threshold väärtusega 10, värv kollane  
-- Lisa veel üks väärtusega 20, värv punane
+- Lisa uus threshold väärtusega 30, värv kollane  
+- Lisa veel üks väärtusega 50, värv punane
 
-Nüüd näitab gauge rohelist kui PayPal osakaal on alla 10%, kollast 10-20% vahel ja punast üle 20%.
+Nüüd näitab gauge rohelist kui Loafers'ite osakaal on alla 30%, kollast 30-50% vahel ja punast üle 50%.
 
-Anna pealkiri "PayPal % USAs" ja salvesta.
+Anna pealkiri "Loafers % kogumüügist" ja salvesta.
 
 ## Osa 7: Ajaliste trendide võrdlus
 
@@ -297,7 +304,7 @@ Flag `-v` kustutab ka volume'd, sealhulgas Grafana salvestatud dashboardid.
 
 ## Kui midagi ei tööta
 
-Kui konteiner ei käivitu, vaata logisid:
+**Konteiner ei käivitu:**
 
 ```bash
 docker compose logs prometheus
@@ -305,8 +312,50 @@ docker compose logs grafana
 docker compose logs shoehub
 ```
 
-Kui Grafana ei saa Prometheus'ega ühendust, kontrolli et URL on `http://prometheus:9090`, mitte `http://localhost:9090`.
+**Prometheus Targets näitab shoehub DOWN:**
 
-Kui paneel näitab "No data", testi päringut kõigepealt Prometheus'e UI-s aadressil http://localhost:9090. Kui seal töötab, on probleem Grafana seadistuses.
+Kontrolli, kas Prometheus näeb Shoehubi Docker'i võrgus:
 
-Kui variable ei tööta, kontrolli et Query on täpselt `label_values(shoehub_payments, CountryCode)` ja data source on Prometheus.
+```bash
+docker compose exec prometheus wget -qO- http://shoehub:8080/metrics | head
+```
+
+Kui see ei tagasta mõõdikuid, on probleem võrguühenduses või Shoehub pole käivitunud.
+
+**Grafana "Save & Test" ebaõnnestub:**
+
+Kontrolli, et URL on täpselt `http://prometheus:9090` (mitte localhost!). Testi ühendust Grafana konteinerist:
+
+```bash
+docker compose exec grafana wget -qO- http://prometheus:9090/-/ready
+```
+
+**Paneel näitab "No data":**
+
+Kõigepealt kontrolli, kas mõõdik üldse eksisteerib. Mine Prometheus UI-sse ja kirjuta `shoehub_` - autocomplete näitab olemasolevaid mõõdikuid. Kui oodatud mõõdikut pole, pead kasutama teist mõõdikut.
+
+Seejärel testi päringut Prometheus'es. Kui seal töötab aga Grafanas mitte, on probleem Grafana seadistuses.
+
+**Variable ei tööta mitme valikuga:**
+
+Kui valid mitu riiki ja andmed kaovad, kontrolli et päringus on `=~` (regex), mitte `=`:
+
+```promql
+# VALE - ei tööta mitme valikuga
+{CountryCode="$country"}
+
+# ÕIGE - töötab ka mitme valikuga
+{CountryCode=~"$country"}
+```
+
+**Port on juba kasutusel:**
+
+Kui mõni port (8080, 9090, 3000) on kinni, näed viga konteineri logides. Kontrolli, mis protsess porti kasutab:
+
+```bash
+lsof -i :8080
+lsof -i :9090
+lsof -i :3000
+```
+
+Saad kas selle protsessi peatada või muuta docker-compose.yml's porte (nt `"9091:9090"`).
